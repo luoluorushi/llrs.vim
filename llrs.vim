@@ -1,1 +1,3 @@
-nnoremap <Leader>f   <Esc>:echo hello world<CR>
+function! Helloworld()
+     echo "hello,world"
+endfunction    
