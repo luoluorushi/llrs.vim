@@ -48,5 +48,5 @@ set shell=/bin/zsh
 
 autocmd InsertLeave * let s:sinput=s:get_input() | call s:change_input_source(0)
 autocmd InsertEnter * call s:change_input_source(1)
-autocmd VimEnter * call s:zoom_window()
-autocmd VimLeave * call s:zoom_window()
+"autocmd VimEnter * call s:zoom_window()
+"autocmd VimLeave * call s:zoom_window()
