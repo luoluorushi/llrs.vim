@@ -19,11 +19,18 @@ EOF
 else
     if s:get_input() != 'ABC'
 py3 << EOF
-#import llrs
+import llrs
 llrs.change_input_source()
 EOF
     endif
 endif
+endfunction
+
+function! s:zoom_window()
+py3 << EOF
+import llrs
+llrs.zoom_window()
+EOF
 endfunction
 
 let s:sinput='ABC'
@@ -41,3 +48,5 @@ set shell=/bin/zsh
 
 autocmd InsertLeave * let s:sinput=s:get_input() | call s:change_input_source(0)
 autocmd InsertEnter * call s:change_input_source(1)
+autocmd VimEnter * call s:zoom_window()
+autocmd VimLeave * call s:zoom_window()
