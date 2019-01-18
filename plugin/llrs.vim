@@ -33,9 +33,29 @@ llrs.zoom_window()
 EOF
 endfunction
 
-let s:sinput='ABC'
-command -nargs=0 Helloo  call s:change_input_source(1)
+function! s:to_head_or_impl()
+    if expand('%:e') == 'cpp'
+        let command='vi '.expand('%:p:h').'/'.expand('%:r').'.h'
+        let path=expand('%:p:h').'/'.expand('%:r').'.h'
+        if filereadable(path)
+            echom command
+            exec command
+        endif
+    elseif expand('%:e') == 'h'
+        let command='vi '.expand('%:p:h').'/'.expand('%:r').'.cpp'
+        let path=expand('%:p:h').'/'.expand('%:r').'.cpp'
+        if filereadable(path)
+            exec command
+        endif
+    endif
+endfunction
 
+let s:sinput='ABC'
+command! -nargs=0 LlrsHead  call s:to_head_or_impl()
+
+noremap <SID>to_head_or_impl :call <SID>to_head_or_impl()<CR>
+noremap <unique> <script> <Plug>llrsHead <SID>to_head_or_impl
+map <Leader>n   <Plug>llrsHead
 nnoremap <Leader>a   <Esc>:w<CR>:!git add %<CR>
 nnoremap <Leader>c   <Esc>:w<CR>:!git commit -m ""<Left>
 nnoremap <Leader><Leader>g   <Esc>:!git push origin master<CR>
