@@ -38,7 +38,6 @@ function! s:to_head_or_impl()
         let command='vi '.expand('%:p:h').'/'.expand('%:r').'.h'
         let path=expand('%:p:h').'/'.expand('%:r').'.h'
         if filereadable(path)
-            echom command
             exec command
         endif
     elseif expand('%:e') == 'h'
