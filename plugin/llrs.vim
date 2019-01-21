@@ -54,12 +54,13 @@ command! -nargs=0 LlrsHead  call s:to_head_or_impl()
 
 noremap <SID>to_head_or_impl :call <SID>to_head_or_impl()<CR>
 noremap <unique> <script> <Plug>llrsHead <SID>to_head_or_impl
+
 map <Leader>n   <Plug>llrsHead
-nnoremap <Leader>a   <Esc>:w<CR>:!git add %<CR>
-nnoremap <Leader>c   <Esc>:w<CR>:!git commit -m ""<Left>
-nnoremap <Leader><Leader>g   <Esc>:!git push origin master<CR>
-nnoremap <Leader>1   <Esc>:1b<CR>
-nnoremap <Leader>d   <Esc>:packadd termdebug<CR>:Termdebug app<CR><C-W>c<C-w>c<C-w>s<C-w>v:b debugged program<CR><C-w>h:b gdb<CR>
+nnoremap <Leader>la   <Esc>:w<CR>:!git add %<CR>
+nnoremap <Leader>lc   <Esc>:w<CR>:!git commit -m ""<Left>
+nnoremap <Leader>lg   <Esc>:!git push origin master<CR>
+nnoremap <Leader>l1   <Esc>:1b<CR>
+nnoremap <Leader>ld   <Esc>:packadd termdebug<CR>:Termdebug app<CR><C-W>c<C-w>c<C-w>s<C-w>v:b debugged program<CR><C-w>h:b gdb<CR>
 nnoremap <Leader>f   <Esc>:NERDTreeToggle<CR>
 nnoremap <Leader>s   <Esc>:CtrlSF<CR>
 
