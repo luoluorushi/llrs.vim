@@ -55,7 +55,7 @@ command! -nargs=0 LlrsHead  call s:to_head_or_impl()
 noremap <SID>to_head_or_impl :call <SID>to_head_or_impl()<CR>
 noremap <unique> <script> <Plug>llrsHead <SID>to_head_or_impl
 
-map <Leader>n   <Plug>llrsHead
+map <Leader>ln   <Plug>llrsHead
 nnoremap <Leader>la   <Esc>:w<CR>:!git add %<CR>
 nnoremap <Leader>lc   <Esc>:w<CR>:!git commit -m ""<Left>
 nnoremap <Leader>lg   <Esc>:!git push origin master<CR>
