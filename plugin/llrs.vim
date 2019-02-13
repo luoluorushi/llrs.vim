@@ -96,5 +96,6 @@ autocmd InsertEnter * silent! call s:change_input_source(1)
 "autocmd VimLeave * call s:zoom_window()
 autocmd GUIEnter * call s:load_proj()
 
+set number
 set relativenumber
 set shell=/bin/zsh
