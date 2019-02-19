@@ -81,21 +81,19 @@ noremap <unique> <script> <Plug>llrsCompare <SID>compare_file
 noremap <SID>goto_file :call <SID>goto_file()<CR>
 noremap <unique> <script> <Plug>llrsGoto <SID>goto_file<CR>
 
-map <Leader>l3   <Plug>llrsCompare<Esc>gt<Plug>llrsGoto
-map <Leader>l2   <Plug>llrsHead
-nnoremap <Leader>la   <Esc>:w<CR>:!git add %<CR>
-nnoremap <Leader>lc   <Esc>:w<CR>:!git commit -m ""<Left>
-nnoremap <Leader>lg   <Esc>:!git push origin master<CR>
-nnoremap <Leader>l1   <Esc>:1b<CR>
-nnoremap <Leader>ld   <Esc>:packadd termdebug<CR>:Termdebug app<CR><C-W>c<C-w>c<C-w>s<C-w>v:b debugged program<CR><C-w>h:b gdb<CR>
+map <C-l>3   <Plug>llrsCompare<Esc>gt<Plug>llrsGoto
+map <C-l>2   <Plug>llrsHead
+nnoremap <C-l>a   <Esc>:w<CR>:!git add %<CR>
+nnoremap <C-l>c   <Esc>:w<CR>:!git commit -m ""<Left>
+nnoremap <C-l>g   <Esc>:!git push origin master<CR>
+nnoremap <C-l>1   <Esc>:1b<CR>
+nnoremap <C-l>d   <Esc>:packadd termdebug<CR>:Termdebug app<CR><C-W>c<C-w>c<C-w>s<C-w>v:b debugged program<CR><C-w>h:b gdb<CR>
 
 
 autocmd InsertLeave * silent! let s:sinput=s:get_input() | silent! call s:change_input_source(0)
 autocmd InsertEnter * silent! call s:change_input_source(1)
 "autocmd VimEnter * call s:zoom_window()
 "autocmd VimLeave * call s:zoom_window()
-autocmd GUIEnter * call s:load_proj()
+"autocmd GUIEnter * call s:load_proj()
 
-set number
-set relativenumber
 set shell=/bin/zsh
