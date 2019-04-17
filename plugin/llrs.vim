@@ -35,15 +35,18 @@ endfunction
 
 function! s:to_head_or_impl()
     if expand('%:e') == 'cpp'
-        let command='vi '.expand('%:p:h').'/'.expand('%:r').'.h'
-        let path=expand('%:p:h').'/'.expand('%:r').'.h'
-        if filereadable(path)
+        let path=expand('%:p')
+        let headpath=substitute(path, '.cpp', '.h', "")
+        let command='vi '.headpath
+        if filereadable(headpath)
             exec command
         endif
     elseif expand('%:e') == 'h'
-        let command='vi '.expand('%:p:h').'/'.expand('%:r').'.cpp'
-        let path=expand('%:p:h').'/'.expand('%:r').'.cpp'
-        if filereadable(path)
+        let ppth=expand('%:p')
+        let ppth = ppth.'pp'
+        let implpath=substitute(ppth, '.hpp', '.cpp', "")
+        let command='vi '.implpath
+        if filereadable(implpath)
             exec command
         endif
     endif
@@ -51,7 +54,7 @@ endfunction
 
 function! s:compare_file()
     let prepath = expand('%:p')
-    let s:path= substitute(prepath, 'MergeMac', 'cross_platform', '')
+    let s:path= substitute(prepath, 'TencentVideoPCPlayer', 'cross_platform', '')
 endfunction
 
 function! s:goto_file()
@@ -87,7 +90,9 @@ nnoremap <C-l>a   <Esc>:w<CR>:!git add %<CR>
 nnoremap <C-l>c   <Esc>:w<CR>:!git commit -m ""<Left>
 nnoremap <C-l>g   <Esc>:!git push origin master<CR>
 nnoremap <C-l>1   <Esc>:1b<CR>
-nnoremap <C-l>d   <Esc>:packadd termdebug<CR>:Termdebug app<CR><C-W>c<C-w>c<C-w>s<C-w>v:b debugged program<CR><C-w>h:b gdb<CR>
+nnoremap <C-l>d   <Esc>:packadd termdebug<CR>:Termdebug<CR><C-W>c<C-w>c<C-w>s:b arm-linux-androideabi-gdb<CR>set sysroot /Users/luoluorushi/tmp/and/8d946090/system/bin<CR>file ~/app_process<CR>target remote :4000<CR>set solib-search-path /Users/luoluorushi/code/tvkplayer/tvkplayercore/core/obj-full<CR>
+"nnoremap <C-l>d   <Esc>:packadd termdebug<CR>:Termdebug<CR><C-W>c<C-w>c<C-w>s<C-w>v:b debugged program<CR><C-w>h:b arm-linux-androideabi-gdb<CR>set sysroot /Users/luoluorushi/tmp/and/8d946090/system/bin<CR>file ~/app_process<CR>target remote :4000<CR>set solib-search-path /Users/luoluorushi/code/tvkplayer/tvkplayercore/core/obj-full<CR>
+"nnoremap <C-l>d   <Esc>:packadd termdebug<CR>:Termdebug app<CR><C-W>c<C-w>c<C-w>s<C-w>v:b debugged program<CR><C-w>h:b gdb<CR>
 
 
 autocmd InsertLeave * silent! let s:sinput=s:get_input() | silent! call s:change_input_source(0)
@@ -97,3 +102,10 @@ autocmd InsertEnter * silent! call s:change_input_source(1)
 "autocmd GUIEnter * call s:load_proj()
 
 set shell=/bin/zsh
+
+"register
+let @a='viw"jp'
+let @t='i// "%poo c€kbCreated by luoluorushi on =strftime("%Y/%m/%d.")Copyright u00a9 =stf€kbrftime("%Y¿ "€kb€kb ")luoluorushi. All right reserved.€kb€kb€kb'
+
+" vim tips
+" capture a control character by first typing CTRL-v followed by the character you want
