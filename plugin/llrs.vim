@@ -38,9 +38,7 @@ function! s:to_head_or_impl()
         let path=expand('%:p')
         let headpath=substitute(path, '.cpp', '.h', "")
         let command='vi '.headpath
-        if filereadable(headpath)
-            exec command
-        endif
+        exec command
     elseif expand('%:e') == 'h'
         let ppth=expand('%:p')
         let ppth = ppth.'pp'
@@ -83,6 +81,9 @@ noremap <SID>compare_file :call <SID>compare_file()<CR>
 noremap <unique> <script> <Plug>llrsCompare <SID>compare_file
 noremap <SID>goto_file :call <SID>goto_file()<CR>
 noremap <unique> <script> <Plug>llrsGoto <SID>goto_file<CR>
+
+noremap [{ [[k%%b
+noremap ]} 2j]]k%%b
 
 map <C-l>3   <Plug>llrsCompare<Esc>gt<Plug>llrsGoto
 map <C-l>2   <Plug>llrsHead
