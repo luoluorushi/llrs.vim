@@ -119,6 +119,24 @@ fu! llrs#scratch()
 	exec "setlocal bufhidden=hide"
 	exec "setlocal noswapfile"
 	exec "setlocal nobuflisted"
+    noremap <buffer> q :bd<CR>
+endfu
+
+fu! llrs#filterInScratch(filter)
+	let lines = getline(1, '$')
+    let listlen = len(lines)
+    let index = 0
+    if listlen == 0
+        return
+    endif
+    call llrs#scratch()
+    while index < listlen
+        if match(lines[index], a:filter) != -1
+            let @8 = lines[index]
+            put 8
+        endif
+        let index += 1
+    endwhile
 endfu
 
 " ===============================utils end ======================================
@@ -134,8 +152,33 @@ endfu
 "
 let s:fileline=[]
 let s:mapsplitter = ""
+let s:dataFilePath = "/Users/luoluorushi/Github/lldb/"
+let s:dataFiles=["default.db","copy.db","essence.db","algorithm.db","temp.db"]
 
-fu! llrs#adddata(title, content, ...)
+fu! llrs#showAddScrath()
+    call llrs#scratch()
+    noremap ;c :call llrs#addFromScratch()<CR>
+    let @8 = s:mapsplitter
+    put 8
+    let @8 = "title:"
+    put 8
+    let @8 = "description:"
+    put 8
+    let @8 = s:mapsplitter
+    put 8
+    let @8 = "url:"
+    put 8
+    let @8 = "copy:"
+    put 8
+    let @8 = "colume:"
+    put 8
+    let @8 = "tag:"
+    put 8
+    let @8 = s:mapsplitter
+    put 8
+endfu
+
+fu! llrs#addData(title, content, ...)
     let splitter = s:mapsplitter
     let line = splitter
     let line .= "title:"
@@ -144,58 +187,202 @@ fu! llrs#adddata(title, content, ...)
     let line .= "description:"
     let line .= a:content
     let argcount = a:0
-    if argcount > 0 && a:1 != ''
+    if argcount > 0 
        let line .= splitter
-       let line .= "copy:"
+       let line .= "url:"
        let line .= a:1
     en
-    if argcount > 1 && a:2 != ''
+    if argcount > 1 
        let line .= splitter
-       let line .= "colume:"
+       let line .= "copy:"
        let line .= a:2
     en
-    if argcount > 2 && a:3 != ''
+    if argcount > 2 
+       let line .= splitter
+       let line .= "colume:"
+       let line .= a:3
+    en
+    if argcount > 3 
        let line .= splitter
        let line .= "tag:"
-       let line .= a:3
+       let line .= a:4
     en
     let line .= splitter
     call add(s:fileline,line)
-    call llrs#showdata(s:fileline, "", "heh")
+    call llrs#showdata(s:fileline, "", "heh", "", "")
 endfu
 
-fu! llrs#showoneline(index, line, st, sd)
+fu! llrs#showoneline(index, line, st, sd, cl, tg)
     let maplist = split(a:line, s:mapsplitter)
-    if len(maplist) > 0
-        let @8 = string(a:index).". ".strpart(maplist[0], 6, strlen(maplist[0]))
-        if match(@8, a:st) == -1
+    let title=""
+    let des=""
+    let copy=""
+    let colume=""
+    let tag=""
+    let url=""
+    let listlen = len(maplist)
+    if listlen > 0
+        let title = string(a:index).". ".strpart(maplist[0], 6, strlen(maplist[0]))
+        if match(title, a:st) == -1
             return
         endif
     endif
-    if len(maplist) > 1
-        let @9 = strpart(maplist[1], match(maplist[1], ":")+1, strlen(maplist[1]))
-        if match(@9, a:sd) == -1
+    if listlen > 1
+        let des = strpart(maplist[1], match(maplist[1], ":")+1, strlen(maplist[1]))
+        if match(des, a:sd) == -1
             return
         endif
-        put 8
-        put 9
     endif
-    let mapindex = 2
-    while mapindex < len(maplist)
-        let @8 = maplist[mapindex]
+    if listlen > 2
+        let copy = strpart(maplist[2], match(maplist[2], ":")+1, strlen(maplist[2]))
+    endif
+    if listlen > 3
+        let colume = strpart(maplist[3], match(maplist[3], ":")+1, strlen(maplist[3]))
+        if match(colume, a:cl) == -1
+            return
+        endif
+    endif
+    if listlen > 4
+        let tag = strpart(maplist[4], match(maplist[4], ":")+1, strlen(maplist[4]))
+        if match(tag, a:tg) == -1
+            return
+        endif
+    endif
+    if listlen > 5
+        let url =strpart(maplist[5], match(maplist[5], ":")+1, strlen(maplist[5]))
+    endif
+
+    let @8 = title
+    put 8
+    let deslines = split(des, '')
+    let deslen = len(deslines)
+    let desindex = 0
+    while desindex < deslen
+        let @8 = deslines[desindex]
         put 8
-        let mapindex += 1
+        let desindex += 1
     endwhile
+    if strlen(url) > 0
+        let url = '[link url]('.url.')'
+    endif
+    let @8 = url
+    put 8
+    let @8 = '```'
+    put 8
+    let @8 = copy
+    put 8
+    let @8 = '```'
+    put 8
+    let @8 = colume
+    put 8
+    let @8 = tag
+    put 8
 endfu
 
-fu! llrs#showdata(lines, st, sd)
+fu! llrs#showdata(lines, st, sd, cl, tg)
     call llrs#scratch()
+    set syntax=markdown
+    "map <buffer> <C-o> q
     let index = 0
-    let @8 = ""
     while index < len(a:lines)
-        call llrs#showoneline(index, a:lines[index], a:st, a:sd)
+        call llrs#showoneline(index, a:lines[index], a:st, a:sd, a:cl, a:tg)
         let index += 1
     endwhile
 endfu
 
+
+fu! llrs#addFromScratch()
+	let lines = getline(1, '$')
+    let listlen = len(lines)
+    if listlen > 20
+        echo "too much lines"
+        return
+    endif
+    let index = 0
+    if listlen == 0
+        return
+    endif
+    let title = ""
+    let des = ""
+    let url = ""
+    let copy = ""
+    let colume = ""
+    let tag = ""
+    while index < listlen
+        if match(lines[index], s:mapsplitter) != -1
+            let index += 1
+            break
+        endif
+        let index += 1
+    endwhile
+
+    while index < listlen
+        if match(lines[index], s:mapsplitter) != -1
+            break
+        endif
+        if match(lines[index], "title:") == 0
+            if strlen(title) > 0
+                echo "title already exist"
+                return 
+            endif
+            let title = strpart(lines[index], match(lines[index], ":")+1, strlen(lines[index]))
+        endif
+        if match(lines[index], "description:") == 0
+            if strlen(des) > 0
+                echo "description already exist"
+                return 
+            endif
+            let des = strpart(lines[index], match(lines[index], ":")+1, strlen(lines[index]))
+            let index += 1
+            while index < listlen
+                if match(lines[index], s:mapsplitter) != -1
+                    let index += 1
+                    break
+                endif
+                let des = des.''.lines[index]
+                let index += 1
+            endwhile
+        endif
+        if match(lines[index], "url:") == 0
+            if strlen(url) > 0
+                echo "url already exist"
+                return 
+            endif
+            let url = strpart(lines[index], match(lines[index], ":")+1, strlen(lines[index]))
+        endif
+        if match(lines[index], "copy:") == 0
+            if strlen(copy) > 0
+                echo "copy already exist"
+                return 
+            endif
+            let copy = strpart(lines[index], match(lines[index], ":")+1, strlen(lines[index]))
+        endif
+        if match(lines[index], "colume:") == 0
+            if strlen(colume) > 0
+                echo "colume already exist"
+                return 
+            endif
+            let colume = strpart(lines[index], match(lines[index], ":")+1, strlen(lines[index]))
+        endif
+        if match(lines[index], "tag:") == 0
+            if strlen(tag) > 0
+                echo "tag already exist"
+                return 
+            endif
+            let tag = strpart(lines[index], match(lines[index], ":")+1, strlen(lines[index]))
+        endif
+
+        let index += 1
+    endwhile
+
+    if strlen(title) == 0 || strlen(des) == 0
+        return
+    endif
+    call llrs#addData(title, des, url, copy, colume, tag)
+endfu
+
+" ===============================map begin ========================================
+noremap ;a :call llrs#showAddScrath()<CR>
+" ===============================map end ========================================
+"
 " ===============================database end ========================================
