@@ -144,6 +144,7 @@ endfu
 
 " title:title content
 " description:descontent
+" url:url
 " copy:copy content
 " colume:colume name
 " tag:tag name
@@ -153,11 +154,28 @@ endfu
 let s:fileline=[]
 let s:mapsplitter = ""
 let s:dataFilePath = "/Users/luoluorushi/Github/lldb/"
-let s:dataFiles=["default.db","copy.db","essence.db","algorithm.db","temp.db"]
+let s:dataFiles=["misc","copy","essence","algorithm","temp"]
+let s:dataFileExt = ".db"
+let s:dataBufMap = {}
+let s:hasCopy = 0
+
+fu! s:dbReadFromFile(file)
+    if has_key(s:dataBufMap, a:file)
+        return s:dataBufMap[a:file]
+    endif
+    if index(s:dataFiles, a:file) < 0
+        echom "not support db file"
+        return []
+    endif
+    let filepath = s:dataFilePath.a:file.s:dataFileExt
+    let filedata = readfile(filepath)
+    let s:dataBufMap[a:file] = filedata
+    return s:dataBufMap[a:file]
+endfu
 
 fu! llrs#showAddScrath()
     call llrs#scratch()
-    noremap ;c :call llrs#addFromScratch()<CR>
+    map <buffer> ;c :call llrs#addFromScratch()<CR>
     let @8 = s:mapsplitter
     put 8
     let @8 = "title:"
@@ -174,11 +192,26 @@ fu! llrs#showAddScrath()
     put 8
     let @8 = "tag:"
     put 8
+    let @8 = "filedb:misc"
+    put 8
+    
+    let index = 0
+    let dblen = len(s:dataFiles)
+    let tips = "("
+    while index < dblen
+        let tips =  tips.s:dataFiles[index].' '
+        let index += 1
+    endwhile
+    let tips .= ")"
+    let @8 = tips
+    put 8
     let @8 = s:mapsplitter
     put 8
+    execute "normal gg2jA"
 endfu
 
-fu! llrs#addData(title, content, ...)
+fu! s:addDbData(file,title, content, ...)
+    let file = s:dataFilePath.a:file.s:dataFileExt
     let splitter = s:mapsplitter
     let line = splitter
     let line .= "title:"
@@ -208,11 +241,19 @@ fu! llrs#addData(title, content, ...)
        let line .= a:4
     en
     let line .= splitter
-    call add(s:fileline,line)
-    call llrs#showdata(s:fileline, "", "heh", "", "")
+    let lines = []
+    call insert(lines, line)
+    call writefile(lines, file, "a")
+
+    let gitcommand = "!cd ".s:dataFilePath." && git add . && git commit -m \"".a:title."\" && git push origin master"
+    execute gitcommand
+
+    if has_key(s:dataBufMap, a:file)
+        call add(s:dataBufMap[a:file],line)
+    endif
 endfu
 
-fu! llrs#showoneline(index, line, st, sd, cl, tg)
+fu! s:showoneline(index, line, st, sd, cl, tg)
     let maplist = split(a:line, s:mapsplitter)
     let title=""
     let des=""
@@ -224,32 +265,32 @@ fu! llrs#showoneline(index, line, st, sd, cl, tg)
     if listlen > 0
         let title = string(a:index).". ".strpart(maplist[0], 6, strlen(maplist[0]))
         if match(title, a:st) == -1
-            return
+            return 0
         endif
     endif
     if listlen > 1
         let des = strpart(maplist[1], match(maplist[1], ":")+1, strlen(maplist[1]))
         if match(des, a:sd) == -1
-            return
+            return 0
         endif
     endif
     if listlen > 2
-        let copy = strpart(maplist[2], match(maplist[2], ":")+1, strlen(maplist[2]))
+        let url =strpart(maplist[2], match(maplist[2], ":")+1, strlen(maplist[2]))
     endif
     if listlen > 3
-        let colume = strpart(maplist[3], match(maplist[3], ":")+1, strlen(maplist[3]))
-        if match(colume, a:cl) == -1
-            return
-        endif
+        let copy = strpart(maplist[3], match(maplist[3], ":")+1, strlen(maplist[3]))
     endif
     if listlen > 4
-        let tag = strpart(maplist[4], match(maplist[4], ":")+1, strlen(maplist[4]))
-        if match(tag, a:tg) == -1
-            return
+        let colume = strpart(maplist[4], match(maplist[4], ":")+1, strlen(maplist[4]))
+        if match(colume, a:cl) == -1
+            return 0
         endif
     endif
     if listlen > 5
-        let url =strpart(maplist[5], match(maplist[5], ":")+1, strlen(maplist[5]))
+        let tag = strpart(maplist[5], match(maplist[5], ":")+1, strlen(maplist[5]))
+        if match(tag, a:tg) == -1
+            return 0
+        endif
     endif
 
     let @8 = title
@@ -277,15 +318,28 @@ fu! llrs#showoneline(index, line, st, sd, cl, tg)
     put 8
     let @8 = tag
     put 8
+    execute "normal gg"
+    if s:hasCopy == 0 && len(copy) > 0
+        let @* = copy
+        let s:hasCopy = 1
+    endif
+    return 1
 endfu
 
-fu! llrs#showdata(lines, st, sd, cl, tg)
+fu! llrs#showdata(file, st, sd, cl, tg)
+    let lines = s:dbReadFromFile(a:file)
+    if len(lines) == 0
+        echo "empty file"
+        return
+    endif
     call llrs#scratch()
     set syntax=markdown
     "map <buffer> <C-o> q
     let index = 0
-    while index < len(a:lines)
-        call llrs#showoneline(index, a:lines[index], a:st, a:sd, a:cl, a:tg)
+    let showindex = 0
+    let s:hasCopy = 0
+    while index < len(lines)
+        let showindex += s:showoneline(showindex, lines[index], a:st, a:sd, a:cl, a:tg)
         let index += 1
     endwhile
 endfu
@@ -294,7 +348,7 @@ endfu
 fu! llrs#addFromScratch()
 	let lines = getline(1, '$')
     let listlen = len(lines)
-    if listlen > 20
+    if listlen > 20000
         echo "too much lines"
         return
     endif
@@ -308,6 +362,7 @@ fu! llrs#addFromScratch()
     let copy = ""
     let colume = ""
     let tag = ""
+    let filedb = ""
     while index < listlen
         if match(lines[index], s:mapsplitter) != -1
             let index += 1
@@ -371,18 +426,30 @@ fu! llrs#addFromScratch()
             endif
             let tag = strpart(lines[index], match(lines[index], ":")+1, strlen(lines[index]))
         endif
+        if match(lines[index], "filedb:") == 0
+            if strlen(tag) > 0
+                echo "filedb already exist"
+                return 
+            endif
+            let filedb = strpart(lines[index], match(lines[index], ":")+1, strlen(lines[index]))
+        endif
 
         let index += 1
     endwhile
 
-    if strlen(title) == 0 || strlen(des) == 0
+    if strlen(title) == 0 || strlen(des) == 0 || strlen(filedb) == 0
         return
     endif
-    call llrs#addData(title, des, url, copy, colume, tag)
+    if match(s:dataFiles, filedb) == -1
+        echo "no such db files"
+        return
+    endif
+    call s:addDbData(filedb, title, des, url, copy, colume, tag)
 endfu
 
 " ===============================map begin ========================================
 noremap ;a :call llrs#showAddScrath()<CR>
+noremap ;1 :call llrs#showdata("misc","","","","")<Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left>
 " ===============================map end ========================================
 "
 " ===============================database end ========================================
