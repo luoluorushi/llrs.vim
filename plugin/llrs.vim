@@ -318,7 +318,6 @@ fu! s:showoneline(index, line, st, sd, cl, tg)
     put 8
     let @8 = tag
     put 8
-    execute "normal gg"
     if s:hasCopy == 0 && len(copy) > 0
         let @* = copy
         let s:hasCopy = 1
@@ -342,6 +341,7 @@ fu! llrs#showdata(file, st, sd, cl, tg)
         let showindex += s:showoneline(showindex, lines[index], a:st, a:sd, a:cl, a:tg)
         let index += 1
     endwhile
+    execute "normal gg"
 endfu
 
 
@@ -427,7 +427,7 @@ fu! llrs#addFromScratch()
             let tag = strpart(lines[index], match(lines[index], ":")+1, strlen(lines[index]))
         endif
         if match(lines[index], "filedb:") == 0
-            if strlen(tag) > 0
+            if strlen(filedb) > 0
                 echo "filedb already exist"
                 return 
             endif
