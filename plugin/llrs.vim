@@ -155,7 +155,7 @@ endfu
 "
 
 " ===============================config begin ======================================
-let s:dbcommit=0
+let s:dbcommit=1
 
 " ===============================config end ======================================
 let s:fileline=[]
@@ -166,6 +166,13 @@ let s:dataFileExt = ".db"
 let s:dataBufMap = {}
 let s:hasCopy = 0
 let s:oriIndexSplitter = ".........."
+
+fu! s:dbGitCommit(title, prefix)
+    if s:dbcommit == 1
+        let gitcommand = "!cd ".s:dataFilePath." && git add . && git commit -m \"".a:prefix.a:title."\" && git push origin master"
+        execute gitcommand
+    endif
+endfu
 
 fu! s:dbReadFromFile(file)
     if has_key(s:dataBufMap, a:file)
@@ -241,11 +248,17 @@ fu! s:delDbData()
         echo file." not writable"
         return
     endif
+    let line = s:dataBufMap[filedb][index]
+    let maplist = split(line, s:mapsplitter)
+    let title = strpart(maplist[0], 6, strlen(maplist[0]))
     call remove(s:dataBufMap[filedb], index)
     call writefile(s:dataBufMap[filedb], file)
     exec "normal ddk"
     let @8 = "rm ori:".string(index)." success"
     put 8
+    echo @8
+
+    call s:dbGitCommit(title, "delete ")
 
     "exec "vi ".file
     "exec "normal ".string(index+1)."G"
@@ -288,10 +301,7 @@ fu! s:addDbData(filedb, title, content, url, copy, pic,file, colume, tag)
     call insert(lines, line)
     call writefile(lines, file, "a")
 
-    if s:dbcommit == 1
-        let gitcommand = "!cd ".s:dataFilePath." && git add . && git commit -m \"".a:title."\" && git push origin master"
-        execute gitcommand
-    endif
+    call s:dbGitCommit(a:title, "add ")
 
     if has_key(s:dataBufMap, a:file)
         call add(s:dataBufMap[a:file],line)
