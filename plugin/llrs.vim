@@ -285,10 +285,10 @@ fu! s:addDbData(filedb, title, content, url, copy, pic,file, colume, tag)
     let line .= "copy:"
     let line .= a:copy
     let line .= splitter
-    let line .= "pic::"
+    let line .= "pic:"
     let line .= a:pic
     let line .= splitter
-    let line .= "file::"
+    let line .= "file:"
     let line .= a:file
     let line .= splitter
     let line .= "colume:"
