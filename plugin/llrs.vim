@@ -146,6 +146,8 @@ endfu
 " description:descontent
 " url:url
 " copy:copy content
+" pic:pic path;pic path;pic path;
+" file:file path;file path;file path;
 " colume:colume name
 " tag:tag name
 "  ------------------------------------------------------------
@@ -188,6 +190,10 @@ fu! llrs#showAddScrath()
     put 8
     let @8 = "copy:"
     put 8
+    let @8 = "pic:"
+    put 8
+    let @8 = "file:"
+    put 8
     let @8 = "colume:"
     put 8
     let @8 = "tag:"
@@ -210,8 +216,8 @@ fu! llrs#showAddScrath()
     execute "normal gg2jA"
 endfu
 
-fu! s:addDbData(file,title, content, ...)
-    let file = s:dataFilePath.a:file.s:dataFileExt
+fu! s:addDbData(filedb, title, content, url, copy, pic,file, colume, tag)
+    let file = s:dataFilePath.a:filedb.s:dataFileExt
     let splitter = s:mapsplitter
     let line = splitter
     let line .= "title:"
@@ -220,33 +226,32 @@ fu! s:addDbData(file,title, content, ...)
     let line .= "description:"
     let line .= a:content
     let argcount = a:0
-    if argcount > 0 
-       let line .= splitter
-       let line .= "url:"
-       let line .= a:1
-    en
-    if argcount > 1 
-       let line .= splitter
-       let line .= "copy:"
-       let line .= a:2
-    en
-    if argcount > 2 
-       let line .= splitter
-       let line .= "colume:"
-       let line .= a:3
-    en
-    if argcount > 3 
-       let line .= splitter
-       let line .= "tag:"
-       let line .= a:4
-    en
+    
+    let line .= splitter
+    let line .= "url:"
+    let line .= a:url
+    let line .= splitter
+    let line .= "copy:"
+    let line .= a:copy
+    let line .= splitter
+    let line .= "pic::"
+    let line .= a:pic
+    let line .= splitter
+    let line .= "file::"
+    let line .= a:file
+    let line .= splitter
+    let line .= "colume:"
+    let line .= a:colume
+    let line .= splitter
+    let line .= "tag:"
+    let line .= a:tag
     let line .= splitter
     let lines = []
     call insert(lines, line)
     call writefile(lines, file, "a")
 
     let gitcommand = "!cd ".s:dataFilePath." && git add . && git commit -m \"".a:title."\" && git push origin master"
-    execute gitcommand
+    "execute gitcommand
 
     if has_key(s:dataBufMap, a:file)
         call add(s:dataBufMap[a:file],line)
@@ -258,39 +263,31 @@ fu! s:showoneline(index, line, st, sd, cl, tg)
     let title=""
     let des=""
     let copy=""
+    let pic=""
+    let file = ""
     let colume=""
     let tag=""
     let url=""
     let listlen = len(maplist)
-    if listlen > 0
-        let title = string(a:index).". ".strpart(maplist[0], 6, strlen(maplist[0]))
-        if match(title, a:st) == -1
-            return 0
-        endif
+    let title = string(a:index).". ".strpart(maplist[0], 6, strlen(maplist[0]))
+    if match(title, a:st) == -1
+        return 0
     endif
-    if listlen > 1
-        let des = strpart(maplist[1], match(maplist[1], ":")+1, strlen(maplist[1]))
-        if match(des, a:sd) == -1
-            return 0
-        endif
+    let des = strpart(maplist[1], match(maplist[1], ":")+1, strlen(maplist[1]))
+    if match(des, a:sd) == -1
+        return 0
     endif
-    if listlen > 2
-        let url =strpart(maplist[2], match(maplist[2], ":")+1, strlen(maplist[2]))
+    let url =strpart(maplist[2], match(maplist[2], ":")+1, strlen(maplist[2]))
+    let copy = strpart(maplist[3], match(maplist[3], ":")+1, strlen(maplist[3]))
+    let pic = strpart(maplist[4], match(maplist[4], ":")+1, strlen(maplist[4]))
+    let file = strpart(maplist[5], match(maplist[5], ":")+1, strlen(maplist[5]))
+    let colume = strpart(maplist[6], match(maplist[6], ":")+1, strlen(maplist[6]))
+    if match(colume, a:cl) == -1
+        return 0
     endif
-    if listlen > 3
-        let copy = strpart(maplist[3], match(maplist[3], ":")+1, strlen(maplist[3]))
-    endif
-    if listlen > 4
-        let colume = strpart(maplist[4], match(maplist[4], ":")+1, strlen(maplist[4]))
-        if match(colume, a:cl) == -1
-            return 0
-        endif
-    endif
-    if listlen > 5
-        let tag = strpart(maplist[5], match(maplist[5], ":")+1, strlen(maplist[5]))
-        if match(tag, a:tg) == -1
-            return 0
-        endif
+    let tag = strpart(maplist[7], match(maplist[7], ":")+1, strlen(maplist[7]))
+    if match(tag, a:tg) == -1
+        return 0
     endif
 
     let @8 = title
@@ -308,6 +305,21 @@ fu! s:showoneline(index, line, st, sd, cl, tg)
     endif
     let @8 = url
     put 8
+    let piclist = split(pic, ";")
+    let filelist = split(file,";")
+    let tempindex = 0
+    while tempindex < len(piclist)
+        let @8 = "![picture".string(tempindex)."](".s:dataFilePath.piclist[tempindex].")"
+        put 8
+        let tempindex += 1
+    endwhile
+    let tempindex = 0
+    while tempindex < len(filelist)
+        let @8 = "[file".string(tempindex)."](file://".s:dataFilePath.filelist[tempindex].")"
+        put 8
+        let tempindex += 1
+    endwhile
+
     let @8 = '```'
     put 8
     let @8 = copy
@@ -325,6 +337,40 @@ fu! s:showoneline(index, line, st, sd, cl, tg)
     return 1
 endfu
 
+fu! s:dbnavigation()
+    let line = getline(".")
+    echom line
+    let index = match(line, "^[.*file://.*)$")
+    if index != -1
+        let matchindex = match(line, "file://")
+        let path = strpart(line, matchindex+7, strlen(line)-matchindex-8)
+        return 
+    endif
+
+    let index = match(line, "^![.*(.*)$")
+    echo index
+    if index != -1
+        let matchindex = match(line, "(")
+        let path = strpart(line, matchindex+1, strlen(line)-matchindex-2)
+        echo path
+        if filereadable(path)
+            exec "!open ".path
+        else
+            echo "file not readable"
+        endif
+        return
+    endif
+
+    let index = match(line, "^[.*(.*)$")
+    echo index
+    if index != -1
+        let matchindex = match(line, "(")
+        let path = strpart(line, matchindex+1, strlen(line)-matchindex-2)
+        echo path
+        exec "!open ".path
+    endif
+endfu
+
 fu! llrs#showdata(file, st, sd, cl, tg)
     let lines = s:dbReadFromFile(a:file)
     if len(lines) == 0
@@ -334,6 +380,7 @@ fu! llrs#showdata(file, st, sd, cl, tg)
     call llrs#scratch()
     set syntax=markdown
     "map <buffer> <C-o> q
+    map <buffer> ;g :call <SID>dbnavigation()<CR>
     let index = 0
     let showindex = 0
     let s:hasCopy = 0
@@ -342,6 +389,7 @@ fu! llrs#showdata(file, st, sd, cl, tg)
         let index += 1
     endwhile
     execute "normal gg"
+    "exec "set nomodifiable"
 endfu
 
 
@@ -360,6 +408,8 @@ fu! llrs#addFromScratch()
     let des = ""
     let url = ""
     let copy = ""
+    let piclist = ""
+    let filelist = ""
     let colume = ""
     let tag = ""
     let filedb = ""
@@ -433,7 +483,12 @@ fu! llrs#addFromScratch()
             endif
             let filedb = strpart(lines[index], match(lines[index], ":")+1, strlen(lines[index]))
         endif
-
+        if match(lines[index], "pic:") == 0
+            let piclist = strpart(lines[index], match(lines[index], ":")+1, strlen(lines[index]))
+        endif
+        if match(lines[index], "file:") == 0
+            let filelist = strpart(lines[index], match(lines[index], ":")+1, strlen(lines[index]))
+        endif
         let index += 1
     endwhile
 
@@ -444,11 +499,12 @@ fu! llrs#addFromScratch()
         echo "no such db files"
         return
     endif
-    call s:addDbData(filedb, title, des, url, copy, colume, tag)
+    call s:addDbData(filedb, title, des, url, copy, piclist,filelist, colume, tag)
 endfu
 
 " ===============================map begin ========================================
 noremap ;a :call llrs#showAddScrath()<CR>
+noremap ;f :call llrs#filterInScratch("")<Left><Left>
 noremap ;1 :call llrs#showdata("misc","","","","")<Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left>
 " ===============================map end ========================================
 "
