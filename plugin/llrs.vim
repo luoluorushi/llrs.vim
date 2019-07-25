@@ -153,6 +153,11 @@ endfu
 "  ------------------------------------------------------------
 " description,copy,colume,tag is option
 "
+
+" ===============================config begin ======================================
+let s:dbcommit=0
+
+" ===============================config end ======================================
 let s:fileline=[]
 let s:mapsplitter = ""
 let s:dataFilePath = "/Users/luoluorushi/Github/lldb/"
@@ -160,6 +165,7 @@ let s:dataFiles=["misc","copy","essence","algorithm","temp"]
 let s:dataFileExt = ".db"
 let s:dataBufMap = {}
 let s:hasCopy = 0
+let s:oriIndexSplitter = ".........."
 
 fu! s:dbReadFromFile(file)
     if has_key(s:dataBufMap, a:file)
@@ -216,6 +222,38 @@ fu! llrs#showAddScrath()
     execute "normal gg2jA"
 endfu
 
+fu! s:delDbData()
+    let filedb = getline(2)
+    let oriline = getline(".")
+    let index = match(oriline, s:oriIndexSplitter."ori:")
+    if index == -1
+        echo "not ori line"
+        return
+    endif
+    let index = str2nr(strpart(oriline, match(oriline, "ori:")+4, len(oriline)))
+    let lines = s:dbReadFromFile(filedb)
+    if len(lines) <= index 
+        echo "del index exccede"
+        return
+    endif
+    let file = s:dataFilePath.filedb.s:dataFileExt
+    if !filewritable(file)
+        echo file." not writable"
+        return
+    endif
+    call remove(s:dataBufMap[filedb], index)
+    call writefile(s:dataBufMap[filedb], file)
+    exec "normal ddk"
+    let @8 = "rm ori:".string(index)." success"
+    put 8
+
+    "exec "vi ".file
+    "exec "normal ".string(index+1)."G"
+    "exec "normal dd"
+    "exec "w"
+    "exec "bd"
+endfu
+
 fu! s:addDbData(filedb, title, content, url, copy, pic,file, colume, tag)
     let file = s:dataFilePath.a:filedb.s:dataFileExt
     let splitter = s:mapsplitter
@@ -250,15 +288,17 @@ fu! s:addDbData(filedb, title, content, url, copy, pic,file, colume, tag)
     call insert(lines, line)
     call writefile(lines, file, "a")
 
-    let gitcommand = "!cd ".s:dataFilePath." && git add . && git commit -m \"".a:title."\" && git push origin master"
-    "execute gitcommand
+    if s:dbcommit == 1
+        let gitcommand = "!cd ".s:dataFilePath." && git add . && git commit -m \"".a:title."\" && git push origin master"
+        execute gitcommand
+    endif
 
     if has_key(s:dataBufMap, a:file)
         call add(s:dataBufMap[a:file],line)
     endif
 endfu
 
-fu! s:showoneline(index, line, st, sd, cl, tg)
+fu! s:showoneline(index,oriindex, line, st, sd, cl, tg)
     let maplist = split(a:line, s:mapsplitter)
     let title=""
     let des=""
@@ -330,6 +370,10 @@ fu! s:showoneline(index, line, st, sd, cl, tg)
     put 8
     let @8 = tag
     put 8
+    let @8 = s:oriIndexSplitter."ori:".a:oriindex.s:oriIndexSplitter
+    put 8
+    let @8 = ""
+    put 8
     if s:hasCopy == 0 && len(copy) > 0
         let @* = copy
         let s:hasCopy = 1
@@ -344,6 +388,12 @@ fu! s:dbnavigation()
     if index != -1
         let matchindex = match(line, "file://")
         let path = strpart(line, matchindex+7, strlen(line)-matchindex-8)
+        if filereadable(path)
+            exec ":!open ".path
+            redraw
+        else
+            echo "file not readable"
+        endif
         return 
     endif
 
@@ -355,6 +405,7 @@ fu! s:dbnavigation()
         echo path
         if filereadable(path)
             exec "!open ".path
+            "exec "redraw!"
         else
             echo "file not readable"
         endif
@@ -381,11 +432,15 @@ fu! llrs#showdata(file, st, sd, cl, tg)
     set syntax=markdown
     "map <buffer> <C-o> q
     map <buffer> ;g :call <SID>dbnavigation()<CR>
+    map <buffer> ;d :call <SID>delDbData()<CR>
+
     let index = 0
     let showindex = 0
     let s:hasCopy = 0
+    let @8 = a:file
+    put 8
     while index < len(lines)
-        let showindex += s:showoneline(showindex, lines[index], a:st, a:sd, a:cl, a:tg)
+        let showindex += s:showoneline(showindex, index, lines[index], a:st, a:sd, a:cl, a:tg)
         let index += 1
     endwhile
     execute "normal gg"
@@ -505,7 +560,12 @@ endfu
 " ===============================map begin ========================================
 noremap ;a :call llrs#showAddScrath()<CR>
 noremap ;f :call llrs#filterInScratch("")<Left><Left>
-noremap ;1 :call llrs#showdata("misc","","","","")<Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left>
+noremap ;1 :call llrs#showdata("temp","","","","")<Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left>
 " ===============================map end ========================================
 "
 " ===============================database end ========================================
+
+fu! s:test()
+endfu
+noremap ;t :call <SID>test()<CR>
+
