@@ -229,6 +229,98 @@ fu! llrs#showAddScrath()
     execute "normal gg2jA"
 endfu
 
+fu! s:showAddWithLine(db, line)
+    let maplist = split(a:line, s:mapsplitter)
+    let title=""
+    let des=""
+    let copy=""
+    let pic=""
+    let file = ""
+    let colume=""
+    let tag=""
+    let url=""
+    let title = strpart(maplist[0], 6, strlen(maplist[0]))
+    let des = strpart(maplist[1], match(maplist[1], ":")+1, strlen(maplist[1]))
+    let url =strpart(maplist[2], match(maplist[2], ":")+1, strlen(maplist[2]))
+    let copy = strpart(maplist[3], match(maplist[3], ":")+1, strlen(maplist[3]))
+    let pic = strpart(maplist[4], match(maplist[4], ":")+1, strlen(maplist[4]))
+    let file = strpart(maplist[5], match(maplist[5], ":")+1, strlen(maplist[5]))
+    let colume = strpart(maplist[6], match(maplist[6], ":")+1, strlen(maplist[6]))
+    let tag = strpart(maplist[7], match(maplist[7], ":")+1, strlen(maplist[7]))
+
+    call llrs#scratch()
+    map <buffer> ;c :call llrs#addFromScratch()<CR>
+    let @8 = s:mapsplitter
+    put 8
+    let @8 = "title:".title
+    put 8
+    let @8 = "description:".des
+    put 8
+    let @8 = s:mapsplitter
+    put 8
+    let @8 = "url:".url
+    put 8
+    let @8 = "copy:".copy
+    put 8
+    let @8 = "pic:".pic
+    put 8
+    let @8 = "file:".file
+    put 8
+    let @8 = "colume:".file
+    put 8
+    let @8 = "tag:".tag
+    put 8
+    let @8 = "filedb:".a:db
+    put 8
+    
+    let index = 0
+    let dblen = len(s:dataFiles)
+    let tips = "("
+    while index < dblen
+        let tips =  tips.s:dataFiles[index].' '
+        let index += 1
+    endwhile
+    let tips .= ")"
+    let @8 = tips
+    put 8
+    let @8 = s:mapsplitter
+    put 8
+   
+endfu
+
+fu! s:modifyData()
+    let filedb = getline(2)
+    let oriline = getline(".")
+    let index = match(oriline, s:oriIndexSplitter."ori:")
+    if index == -1
+        echo "not ori line"
+        return
+    endif
+    let index = str2nr(strpart(oriline, match(oriline, "ori:")+4, len(oriline)))
+    let lines = s:dbReadFromFile(filedb)
+    if len(lines) <= index 
+        echo "del index exccede"
+        return
+    endif
+    let file = s:dataFilePath.filedb.s:dataFileExt
+    if !filewritable(file)
+        echo file." not writable"
+        return
+    endif
+    let line = s:dataBufMap[filedb][index]
+    let maplist = split(line, s:mapsplitter)
+    let title = strpart(maplist[0], 6, strlen(maplist[0]))
+    call remove(s:dataBufMap[filedb], index)
+    call writefile(s:dataBufMap[filedb], file)
+    exec "normal ddk"
+    let @8 = "rm ori:".string(index)." success"
+    put 8
+    echo @8
+
+    call s:dbGitCommit(title, "delete ")
+    call s:showAddWithLine(filedb,line)
+endfu
+
 fu! s:delDbData()
     let filedb = getline(2)
     let oriline = getline(".")
@@ -303,8 +395,8 @@ fu! s:addDbData(filedb, title, content, url, copy, pic,file, colume, tag)
 
     call s:dbGitCommit(a:title, "add ")
 
-    if has_key(s:dataBufMap, a:file)
-        call add(s:dataBufMap[a:file],line)
+    if has_key(s:dataBufMap, a:filedb)
+        call add(s:dataBufMap[a:filedb],line)
     endif
 endfu
 
@@ -319,7 +411,7 @@ fu! s:showoneline(index,oriindex, line, st, sd, cl, tg)
     let tag=""
     let url=""
     let listlen = len(maplist)
-    let title = string(a:index).". ".strpart(maplist[0], 6, strlen(maplist[0]))
+    let title = "####".string(a:index).". ".strpart(maplist[0], 6, strlen(maplist[0]))
     if match(title, a:st) == -1
         return 0
     endif
@@ -340,6 +432,7 @@ fu! s:showoneline(index,oriindex, line, st, sd, cl, tg)
         return 0
     endif
 
+    let mdline = "</br>"
     let @8 = title
     put 8
     let deslines = split(des, '')
@@ -350,10 +443,12 @@ fu! s:showoneline(index,oriindex, line, st, sd, cl, tg)
         put 8
         let desindex += 1
     endwhile
+    let @8 =mdline   
+    put 8        
     if strlen(url) > 0
         let url = '[link url]('.url.')'
     endif
-    let @8 = url
+    let @8 = url.mdline
     put 8
     let piclist = split(pic, ";")
     let filelist = split(file,";")
@@ -370,19 +465,19 @@ fu! s:showoneline(index,oriindex, line, st, sd, cl, tg)
         let tempindex += 1
     endwhile
 
-    let @8 = '```'
+    if len(copy) > 0
+        let @8 = '```'
+        put 8
+        let @8 = copy
+        put 8
+        let @8 = '```'
+        put 8
+    endif
+    let @8 = colume.mdline
     put 8
-    let @8 = copy
+    let @8 = tag.mdline
     put 8
-    let @8 = '```'
-    put 8
-    let @8 = colume
-    put 8
-    let @8 = tag
-    put 8
-    let @8 = s:oriIndexSplitter."ori:".a:oriindex.s:oriIndexSplitter
-    put 8
-    let @8 = ""
+    let @8 = s:oriIndexSplitter."ori:".a:oriindex.s:oriIndexSplitter.mdline
     put 8
     if s:hasCopy == 0 && len(copy) > 0
         let @* = copy
@@ -443,6 +538,7 @@ fu! llrs#showdata(file, st, sd, cl, tg)
     "map <buffer> <C-o> q
     map <buffer> ;g :call <SID>dbnavigation()<CR>
     map <buffer> ;d :call <SID>delDbData()<CR>
+    map <buffer> ;m :call <SID>modifyData()<CR>
 
     let index = 0
     let showindex = 0
@@ -570,7 +666,7 @@ endfu
 " ===============================map begin ========================================
 noremap ;a :call llrs#showAddScrath()<CR>
 noremap ;f :call llrs#filterInScratch("")<Left><Left>
-noremap ;1 :call llrs#showdata("temp","","","","")<Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left>
+noremap ;1 :call llrs#showdata("misc","","","","")<Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left>
 " ===============================map end ========================================
 "
 " ===============================database end ========================================
