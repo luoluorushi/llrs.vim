@@ -203,6 +203,8 @@ fu! llrs#showAddScrath()
     put 8
     let @8 = "copy:"
     put 8
+    let @8 = s:mapsplitter
+    put 8
     let @8 = "pic:"
     put 8
     let @8 = "file:"
@@ -261,6 +263,8 @@ fu! s:showAddWithLine(db, line)
     let @8 = "url:".url
     put 8
     let @8 = "copy:".copy
+    put 8
+    let @8 = s:mapsplitter
     put 8
     let @8 = "pic:".pic
     put 8
@@ -468,8 +472,14 @@ fu! s:showoneline(index,oriindex, line, st, sd, cl, tg)
     if len(copy) > 0
         let @8 = '```'
         put 8
-        let @8 = copy
-        put 8
+        let copylines = split(copy, '')
+        let copylen = len(copylines)
+        let copyindex = 0
+        while copyindex < copylen
+            let @8 = copylines[copyindex]
+            put 8
+            let copyindex += 1
+        endwhile
         let @8 = '```'
         put 8
     endif
@@ -620,6 +630,15 @@ fu! llrs#addFromScratch()
                 return 
             endif
             let copy = strpart(lines[index], match(lines[index], ":")+1, strlen(lines[index]))
+            let index += 1
+            while index < listlen
+                if match(lines[index], s:mapsplitter) != -1
+                    let index += 1
+                    break
+                endif
+                let copy = copy.''.lines[index]
+                let index += 1
+            endwhile
         endif
         if match(lines[index], "colume:") == 0
             if strlen(colume) > 0
