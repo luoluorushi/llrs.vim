@@ -488,7 +488,6 @@ endfu
 
 fu! s:dbnavigation()
     let line = getline(".")
-    echom line
     let index = match(line, "^[.*file://.*)$")
     if index != -1
         let matchindex = match(line, "file://")
@@ -503,7 +502,6 @@ fu! s:dbnavigation()
     endif
 
     let index = match(line, "^![.*(.*)$")
-    echo index
     if index != -1
         let matchindex = match(line, "(")
         let path = strpart(line, matchindex+1, strlen(line)-matchindex-2)
@@ -517,11 +515,11 @@ fu! s:dbnavigation()
         return
     endif
 
-    let index = match(line, "^[.*(.*)$")
+    let index = match(line, "^[.*(.*)</br>$")
     echo index
     if index != -1
         let matchindex = match(line, "(")
-        let path = strpart(line, matchindex+1, strlen(line)-matchindex-2)
+        let path = strpart(line, matchindex+1, strlen(line)-matchindex-7)
         echo path
         exec "!open ".path
     endif
