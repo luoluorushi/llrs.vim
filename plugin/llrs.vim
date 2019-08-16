@@ -490,7 +490,8 @@ fu! s:showoneline(index,oriindex, line, st, sd, cl, tg)
     let @8 = s:oriIndexSplitter."ori:".a:oriindex.s:oriIndexSplitter.mdline
     put 8
     if s:hasCopy == 0 && len(copy) > 0
-        let @* = copy
+        let newcopy=substitute(copy, '', '\n', "")
+        let @* = newcopy
         let s:hasCopy = 1
     endif
     return 1
