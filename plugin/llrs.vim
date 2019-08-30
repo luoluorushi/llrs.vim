@@ -52,7 +52,7 @@ endfunction
 
 function! s:compare_file()
     let prepath = expand('%:p')
-    let s:path= substitute(prepath, 'TencentVideoPCPlayer', 'cross_platform', '')
+    let s:path= substitute(prepath, 'Code/TVKPlayer', 'Downloads/sdk7.5', '')
 endfunction
 
 function! s:goto_file()
@@ -119,7 +119,7 @@ fu! llrs#scratch()
 	exec "setlocal bufhidden=hide"
 	exec "setlocal noswapfile"
 	exec "setlocal nobuflisted"
-    noremap <buffer> q :bd<CR>
+    noremap <buffer> ;q :bd<CR>
 endfu
 
 fu! llrs#filterInScratch(filter)
@@ -129,9 +129,23 @@ fu! llrs#filterInScratch(filter)
     if listlen == 0
         return
     endif
+    if len(a:filter) == 0
+        return
+    endif
+    let no = 0
+    let filter = a:filter
+    if a:filter[0] == '!'
+        let no = 1
+        let filter = strpart(a:filter, 1, strlen(a:filter))
+    endif
     call llrs#scratch()
     while index < listlen
-        if match(lines[index], a:filter) != -1
+        if match(lines[index], filter) != -1
+            if no != 1
+                let @8 = lines[index]
+                put 8
+            endif
+        elseif no == 1
             let @8 = lines[index]
             put 8
         endif
@@ -490,7 +504,7 @@ fu! s:showoneline(index,oriindex, line, st, sd, cl, tg)
     let @8 = s:oriIndexSplitter."ori:".a:oriindex.s:oriIndexSplitter.mdline
     put 8
     if s:hasCopy == 0 && len(copy) > 0
-        let newcopy=substitute(copy, '', '\n', "")
+        let newcopy=substitute(copy, '', '\n', "g")
         let @* = newcopy
         let s:hasCopy = 1
     endif
@@ -534,6 +548,16 @@ fu! s:dbnavigation()
         echo path
         exec "!open ".path
     endif
+
+    let index = match(line, "^[.*(.*)$")
+    echo index
+    if index != -1
+        let matchindex = match(line, "(")
+        let path = strpart(line, matchindex+1, strlen(line)-matchindex-2)
+        echo path
+        exec "!open ".path
+    endif
+
 endfu
 
 fu! llrs#showdata(file, st, sd, cl, tg)
