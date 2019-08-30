@@ -511,18 +511,29 @@ fu! s:showoneline(index,oriindex, line, st, sd, cl, tg)
     return 1
 endfu
 
+fu! s:execOpenFile(path)
+    echo a:path
+    if filereadable(a:path)
+        exec "silent !open \"".a:path."\""
+        redraw!
+    else
+        echo "file not readable"
+     endif
+endfu
+
+fu! s:execOpenUrl(path)
+    echo a:path
+    exec "silent !open \"".a:path."\""
+    redraw!
+endfu
+
 fu! s:dbnavigation()
     let line = getline(".")
     let index = match(line, "^[.*file://.*)$")
     if index != -1
         let matchindex = match(line, "file://")
         let path = strpart(line, matchindex+7, strlen(line)-matchindex-8)
-        if filereadable(path)
-            exec ":!open ".path
-            redraw
-        else
-            echo "file not readable"
-        endif
+        call s:execOpenFile(path)
         return 
     endif
 
@@ -530,13 +541,7 @@ fu! s:dbnavigation()
     if index != -1
         let matchindex = match(line, "(")
         let path = strpart(line, matchindex+1, strlen(line)-matchindex-2)
-        echo path
-        if filereadable(path)
-            exec "!open ".path
-            "exec "redraw!"
-        else
-            echo "file not readable"
-        endif
+        call s:execOpenFile(path)
         return
     endif
 
@@ -545,8 +550,7 @@ fu! s:dbnavigation()
     if index != -1
         let matchindex = match(line, "(")
         let path = strpart(line, matchindex+1, strlen(line)-matchindex-7)
-        echo path
-        exec "!open ".path
+        call s:execOpenUrl(path)
     endif
 
     let index = match(line, "^[.*(.*)$")
@@ -554,8 +558,7 @@ fu! s:dbnavigation()
     if index != -1
         let matchindex = match(line, "(")
         let path = strpart(line, matchindex+1, strlen(line)-matchindex-2)
-        echo path
-        exec "!open ".path
+        call s:execOpenUrl(path)
     endif
 
 endfu
