@@ -82,7 +82,7 @@ noremap <unique> <script> <Plug>llrsCompare <SID>compare_file
 noremap <SID>goto_file :call <SID>goto_file()<CR>
 noremap <unique> <script> <Plug>llrsGoto <SID>goto_file<CR>
 
-noremap [{ [[k%%b
+noremap [{ [[k%%b:cs find c <C-R>=expand("<cword>")<CR><CR>
 noremap ]} 2j]]k%%b
 
 map <C-l>3   <Plug>llrsCompare<Esc>gt<Plug>llrsGoto
