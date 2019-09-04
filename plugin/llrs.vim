@@ -164,6 +164,7 @@ endfu
 " file:file path;file path;file path;
 " colume:colume name
 " tag:tag name
+" reference:ref list
 "  ------------------------------------------------------------
 " description,copy,colume,tag is option
 "
@@ -226,6 +227,8 @@ fu! llrs#showAddScrath()
     let @8 = "colume:"
     put 8
     let @8 = "tag:"
+    put 8
+    let @8 = "reference:"
     put 8
     let @8 = "filedb:misc"
     put 8
@@ -330,7 +333,7 @@ fu! s:modifyData()
     let title = strpart(maplist[0], 6, strlen(maplist[0]))
     call remove(s:dataBufMap[filedb], index)
     call writefile(s:dataBufMap[filedb], file)
-    exec "normal ddk"
+    exec "normal dd"
     let @8 = "rm ori:".string(index)." success"
     put 8
     echo @8
@@ -363,7 +366,7 @@ fu! s:delDbData()
     let title = strpart(maplist[0], 6, strlen(maplist[0]))
     call remove(s:dataBufMap[filedb], index)
     call writefile(s:dataBufMap[filedb], file)
-    exec "normal ddk"
+    exec "normal dd"
     let @8 = "rm ori:".string(index)." success"
     put 8
     echo @8
@@ -377,7 +380,7 @@ fu! s:delDbData()
     "exec "bd"
 endfu
 
-fu! s:addDbData(filedb, title, content, url, copy, pic,file, colume, tag)
+fu! s:addDbData(filedb, title, content, url, copy, pic,file, colume, tag, reference)
     let file = s:dataFilePath.a:filedb.s:dataFileExt
     let splitter = s:mapsplitter
     let line = splitter
@@ -407,6 +410,8 @@ fu! s:addDbData(filedb, title, content, url, copy, pic,file, colume, tag)
     let line .= "tag:"
     let line .= a:tag
     let line .= splitter
+    let line .= a:reference
+    let line .= splitter
     let lines = []
     call insert(lines, line)
     call writefile(lines, file, "a")
@@ -428,6 +433,7 @@ fu! s:showoneline(index,oriindex, line, st, sd, cl, tg)
     let colume=""
     let tag=""
     let url=""
+    let reference=""
     let listlen = len(maplist)
     let title = "####".string(a:index).". ".strpart(maplist[0], 6, strlen(maplist[0]))
     if match(title, a:st) == -1
@@ -448,6 +454,9 @@ fu! s:showoneline(index,oriindex, line, st, sd, cl, tg)
     let tag = strpart(maplist[7], match(maplist[7], ":")+1, strlen(maplist[7]))
     if match(tag, a:tg) == -1
         return 0
+    endif
+    if listlen > 8
+        let reference = strpart(maplist[8], match(maplist[8], ":")+1, strlen(maplist[8]))
     endif
 
     let mdline = "</br>"
@@ -470,6 +479,7 @@ fu! s:showoneline(index,oriindex, line, st, sd, cl, tg)
     put 8
     let piclist = split(pic, ";")
     let filelist = split(file,";")
+    let reflist = split(reference,";")
     let tempindex = 0
     while tempindex < len(piclist)
         let @8 = "![picture".string(tempindex)."](".s:dataFilePath.piclist[tempindex].")"
@@ -479,6 +489,12 @@ fu! s:showoneline(index,oriindex, line, st, sd, cl, tg)
     let tempindex = 0
     while tempindex < len(filelist)
         let @8 = "[file".string(tempindex)."](file://".s:dataFilePath.filelist[tempindex].")"
+        put 8
+        let tempindex += 1
+    endwhile
+    let tempindex = 0
+    while tempindex < len(reflist)
+        let @8 = "[ref".string(tempindex)."](".reflist[tempindex].")"
         put 8
         let tempindex += 1
     endwhile
@@ -529,6 +545,14 @@ endfu
 
 fu! s:dbnavigation()
     let line = getline(".")
+    let index = match(line, "^[ref.*(.*)$")
+    if index != -1
+        let matchindex = match(line, "(")
+        let ref = strpart(line, matchindex+1, strlen(line)-matchindex-2)
+        echom ref
+        call llrs#showdata("misc",ref,"","","")
+        return
+    endif
     let index = match(line, "^[.*file://.*)$")
     if index != -1
         let matchindex = match(line, "file://")
@@ -609,6 +633,7 @@ fu! llrs#addFromScratch()
     let filelist = ""
     let colume = ""
     let tag = ""
+    let reference = ""
     let filedb = ""
     while index < listlen
         if match(lines[index], s:mapsplitter) != -1
@@ -695,6 +720,10 @@ fu! llrs#addFromScratch()
         if match(lines[index], "file:") == 0
             let filelist = strpart(lines[index], match(lines[index], ":")+1, strlen(lines[index]))
         endif
+        if match(lines[index], "reference:") == 0
+            let reference = strpart(lines[index], match(lines[index], ":")+1, strlen(lines[index]))
+        endif
+
         let index += 1
     endwhile
 
@@ -705,7 +734,7 @@ fu! llrs#addFromScratch()
         echo "no such db files"
         return
     endif
-    call s:addDbData(filedb, title, des, url, copy, piclist,filelist, colume, tag)
+    call s:addDbData(filedb, title, des, url, copy, piclist,filelist, colume, tag,reference)
 endfu
 
 " ===============================map begin ========================================
