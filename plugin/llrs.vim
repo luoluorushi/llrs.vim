@@ -91,22 +91,25 @@ nnoremap <C-l>a   <Esc>:w<CR>:!git add %<CR>
 nnoremap <C-l>c   <Esc>:w<CR>:!git commit -m ""<Left>
 nnoremap <C-l>g   <Esc>:!git push origin master<CR>
 nnoremap <C-l>1   <Esc>:1b<CR>
-nnoremap <C-l>d   <Esc>:packadd termdebug<CR>:Termdebug<CR><C-W>c<C-w>c<C-w>s:b arm-linux-androideabi-gdb<CR>set sysroot /Users/luoluorushi/tmp/and/8d946090/system/bin<CR>file ~/app_process<CR>target remote :4000<CR>set solib-search-path /Users/luoluorushi/code/tvkplayer/tvkplayercore/core/obj-full<CR>
+"nnoremap <C-l>d   <Esc>:packadd termdebug<CR>:Termdebug<CR><C-W>c<C-w>c<C-w>s:b arm-linux-androideabi-gdb<CR>set sysroot /Users/luoluorushi/tmp/and/8d946090/system/bin<CR>file ~/app_process<CR>target remote :4000<CR>set solib-search-path /Users/luoluorushi/code/tvkplayer/tvkplayercore/core/obj-full<CR>
 "nnoremap <C-l>d   <Esc>:packadd termdebug<CR>:Termdebug<CR><C-W>c<C-w>c<C-w>s<C-w>v:b debugged program<CR><C-w>h:b arm-linux-androideabi-gdb<CR>set sysroot /Users/luoluorushi/tmp/and/8d946090/system/bin<CR>file ~/app_process<CR>target remote :4000<CR>set solib-search-path /Users/luoluorushi/code/tvkplayer/tvkplayercore/core/obj-full<CR>
-"nnoremap <C-l>d   <Esc>:packadd termdebug<CR>:Termdebug app<CR><C-W>c<C-w>c<C-w>s<C-w>v:b debugged program<CR><C-w>h:b gdb<CR>
+nnoremap <C-l>d   <Esc>:packadd termdebug<CR>:Termdebug hello<CR><C-W>c<C-w>c<C-w>s<C-w>v:b debugged program<CR><C-w>h:b gdb<CR>
 
 
-autocmd InsertLeave * silent! let s:sinput=s:get_input() | silent! call s:change_input_source(0)
-autocmd InsertEnter * silent! call s:change_input_source(1)
+"autocmd InsertLeave * silent! let s:sinput=s:get_input() | silent! call s:change_input_source(0)
+"autocmd InsertEnter * silent! call s:change_input_source(1)
 "autocmd VimEnter * call s:zoom_window()
 "autocmd VimLeave * call s:zoom_window()
 "autocmd GUIEnter * call s:load_proj()
 
 set shell=/bin/zsh
+set vb t_vb=
 
 "register
 let @a='viw"jp'
-let @t='i// "%poo c€kbCreated by luoluorushi on =strftime("%Y/%m/%d.")Copyright u00a9 =stf€kbrftime("%Y¿ "€kb€kb ")luoluorushi. All right reserved.€kb€kb€kb'
+let @t='i// "%poo c€kbCreated by luoluorushi on =strftime("%Y/%m/%d.")Copyright u00a9 =stf€kbrftime("%Y¿ "€kb€kb ")luoluorushi. All right reserved.€kb€kb€kb8bx2j'
+let @g='i#include "gtest/gtest.h"namespace{€kbusing namespace std;TEST(){EXPECT_EQ();kkhi'
+let @k=':let @I*€kb€kb*=expand("%"):vi Cmakelists.te€kbxtgg6jk$bbgg/add_ex3wv$hhp:w'
 
 " vim tips
 " capture a control character by first typing CTRL-v followed by the character you want
@@ -257,6 +260,7 @@ fu! s:showAddWithLine(db, line)
     let file = ""
     let colume=""
     let tag=""
+    let reference=""
     let url=""
     let title = strpart(maplist[0], 6, strlen(maplist[0]))
     let des = strpart(maplist[1], match(maplist[1], ":")+1, strlen(maplist[1]))
@@ -266,6 +270,9 @@ fu! s:showAddWithLine(db, line)
     let file = strpart(maplist[5], match(maplist[5], ":")+1, strlen(maplist[5]))
     let colume = strpart(maplist[6], match(maplist[6], ":")+1, strlen(maplist[6]))
     let tag = strpart(maplist[7], match(maplist[7], ":")+1, strlen(maplist[7]))
+    if len(maplist)> 8
+        let reference = strpart(maplist[8], match(maplist[8], ":")+1, strlen(maplist[8]))
+    endif
 
     call llrs#scratch()
     map <buffer> ;c :call llrs#addFromScratch()<CR>
@@ -290,6 +297,8 @@ fu! s:showAddWithLine(db, line)
     let @8 = "colume:".file
     put 8
     let @8 = "tag:".tag
+    put 8
+    let @8 = "reference:".reference
     put 8
     let @8 = "filedb:".a:db
     put 8
@@ -333,7 +342,9 @@ fu! s:modifyData()
     let title = strpart(maplist[0], 6, strlen(maplist[0]))
     call remove(s:dataBufMap[filedb], index)
     call writefile(s:dataBufMap[filedb], file)
+    let @j=@*
     exec "normal dd"
+    let @*=@j
     let @8 = "rm ori:".string(index)." success"
     put 8
     echo @8
@@ -366,7 +377,9 @@ fu! s:delDbData()
     let title = strpart(maplist[0], 6, strlen(maplist[0]))
     call remove(s:dataBufMap[filedb], index)
     call writefile(s:dataBufMap[filedb], file)
+    let @j=@*
     exec "normal dd"
+    let @*=@j
     let @8 = "rm ori:".string(index)." success"
     put 8
     echo @8
