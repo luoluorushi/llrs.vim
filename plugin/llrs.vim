@@ -104,12 +104,14 @@ nnoremap <C-l>d   <Esc>:packadd termdebug<CR>:Termdebug hello<CR><C-W>c<C-w>c<C-
 
 set shell=/bin/zsh
 set vb t_vb=
+set mouse=
 
 "register
 let @a='viw"jp'
-let @t='i// "%poo c€kbCreated by luoluorushi on =strftime("%Y/%m/%d.")Copyright u00a9 =stf€kbrftime("%Y¿ "€kb€kb ")luoluorushi. All right reserved.€kb€kb€kb8bx2j'
+let @t='i// "%poo c€kbCreated by luoluorushi on =strftime("%Y/%m/%d.")Copyright u00a9 =stf€kbrftime("%Y¿ "€kb€kb ")luoluorushi. All rights reserved.€kb€kb€kb8bx2j'
 let @g='i#include "gtest/gtest.h"namespace{€kbusing namespace std;TEST(){EXPECT_EQ();kkhi'
-let @k=':let @I*€kb€kb*=expand("%"):vi Cmakelists.te€kbxtgg6jk$bbgg/add_ex3wv$hhp:w'
+"let @k=':let @I*€kb€kb*=expand("%"):vi Cmakelists.te€kbxtgg6jk$bbgg/add_ex3wv$hhp:w'
+let @k=':let @*=@%:vi makefilegg2wv3wbep:w'
 
 " vim tips
 " capture a control character by first typing CTRL-v followed by the character you want
@@ -294,7 +296,7 @@ fu! s:showAddWithLine(db, line)
     put 8
     let @8 = "file:".file
     put 8
-    let @8 = "colume:".file
+    let @8 = "colume:".colume
     put 8
     let @8 = "tag:".tag
     put 8
