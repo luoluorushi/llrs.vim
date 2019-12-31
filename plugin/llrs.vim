@@ -34,7 +34,7 @@ EOF
 endfunction
 
 function! s:to_head_or_impl()
-    if expand('%:e') == 'cpp'
+    if expand('%:e') == 'cpp' 
         let path=expand('%:p')
         let headpath=substitute(path, '.cpp', '.h', "")
         let command='vi '.headpath
@@ -574,6 +574,13 @@ fu! s:dbnavigation()
         let path = strpart(line, matchindex+7, strlen(line)-matchindex-8)
         call s:execOpenFile(path)
         return 
+    endif
+    let index = match(line, "^####.\. .*$")
+    if index != -1
+        let matchindex = match(line, "\.")
+        let path = strpart(line, matchindex+7, strlen(line) - matchindex-7)
+        call llrs#showdata("misc",path,"","","")
+        return
     endif
 
     let index = match(line, "^![.*(.*)$")
