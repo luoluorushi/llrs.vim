@@ -128,6 +128,35 @@ fu! llrs#scratch()
     noremap <buffer> ;q :bd<CR>
 endfu
 
+fu! llrs#removeRepeate(start)
+	let lines = getline(1, '$')
+    let listlen = len(lines)
+    let index = 0
+    if listlen == 0
+        return
+    endif
+    call llrs#scratch()
+    let resultList = []
+    while index < listlen
+        let searchIndex = 0
+        let resultLen = len(resultList)
+        let targetStr = lines[index]
+        let matchStr = strpart(targetStr, a:start)
+        while searchIndex < resultLen
+            if matchStr == strpart(resultList[searchIndex], a:start)
+                break
+            endif
+            let searchIndex += 1
+        endwhile
+        if searchIndex == resultLen
+            call add(resultList, targetStr)
+            let @8 = lines[index]
+            put 8
+        endif
+        let index += 1
+    endwhile
+endfu
+
 fu! llrs#filterInScratch(filter)
 	let lines = getline(1, '$')
     let listlen = len(lines)
@@ -763,6 +792,7 @@ endfu
 " ===============================map begin ========================================
 noremap ;a :call llrs#showAddScrath()<CR>
 noremap ;f :call llrs#filterInScratch("")<Left><Left>
+noremap ;r :call llrs#removeRepeate(31)<Left><Left>
 noremap ;1 :call llrs#showdata("misc","","","","")<Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left>
 " ===============================map end ========================================
 "
