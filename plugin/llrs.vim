@@ -112,6 +112,7 @@ let @t='i// "%poo c€kbCreated by luoluorushi on =strftime("%Y/%m/%d.")Copyr
 let @g='i#include "gtest/gtest.h"namespace{€kbusing namespace std;TEST(){EXPECT_EQ();kkhi'
 "let @k=':let @I*€kb€kb*=expand("%"):vi Cmakelists.te€kbxtgg6jk$bbgg/add_ex3wv$hhp:w'
 let @k=':let @*=@%:vi makefilegg2wv3wbep:w'
+let @f='/#define FILE_A_INI//€ýaggvG$y'
 
 " vim tips
 " capture a control character by first typing CTRL-v followed by the character you want
