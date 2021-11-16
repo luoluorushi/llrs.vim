@@ -1,3 +1,77 @@
+" section register begin--------------------------------------------------------------------------------------------------
+
+let @a='viw"jp'
+let @t='i// "%poo ckbCreated by luoluorushi on =strftime("%Y/%m/%d.")Copyright u00a9 =stfkbrftime("%Y¿ "kbkb ")luoluorushi. All rights reserved.kbkbkb8bx2j'
+let @g='i#include "gtest/gtest.h"namespace{kbusing namespace std;TEST(){EXPECT_EQ();kkhi'
+"let @k=':let @I*kbkb*=expand("%"):vi Cmakelists.tekbxtgg6jk$bbgg/add_ex3wv$hhp:w'
+let @k=':let @*=@%:vi makefilegg2wv3wbep:w'
+let @f='/#define FILE_A_INI//ggyG:w'
+
+" section register end----------------------------------------------------------------------------------------------------
+
+" section map begin--------------------------------------------------------------------------------------------------
+
+map <C-l>3   <Plug>llrsCompare<Esc>gt<Plug>llrsGoto
+map <C-l>2   <Plug>llrsHead
+nnoremap <C-l>a   <Esc>:w<CR>:!git add %<CR>
+nnoremap <C-l>c   <Esc>:w<CR>:!git commit -m ""<Left>
+nnoremap <C-l>g   <Esc>:!git push origin master<CR>
+nnoremap <C-l>1   <Esc>:1b<CR>
+"nnoremap <C-l>d   <Esc>:packadd termdebug<CR>:Termdebug<CR><C-W>c<C-w>c<C-w>s:b arm-linux-androideabi-gdb<CR>set sysroot /Users/luoluorushi/tmp/and/8d946090/system/bin<CR>file ~/app_process<CR>target remote :4000<CR>set solib-search-path /Users/luoluorushi/code/tvkplayer/tvkplayercore/core/obj-full<CR>
+"nnoremap <C-l>d   <Esc>:packadd termdebug<CR>:Termdebug<CR><C-W>c<C-w>c<C-w>s<C-w>v:b debugged program<CR><C-w>h:b arm-linux-androideabi-gdb<CR>set sysroot /Users/luoluorushi/tmp/and/8d946090/system/bin<CR>file ~/app_process<CR>target remote :4000<CR>set solib-search-path /Users/luoluorushi/code/tvkplayer/tvkplayercore/core/obj-full<CR>
+nnoremap <C-l>d   <Esc>:packadd termdebug<CR>:Termdebug hello<CR><C-W>c<C-w>c<C-w>s<C-w>v:b debugged program<CR><C-w>h:b gdb<CR>
+
+noremap <SID>to_head_or_impl :call <SID>to_head_or_impl()<CR>
+noremap <unique> <script> <Plug>llrsHead <SID>to_head_or_impl
+
+noremap <SID>compare_file :call <SID>compare_file()<CR>
+noremap <unique> <script> <Plug>llrsCompare <SID>compare_file
+noremap <SID>goto_file :call <SID>goto_file()<CR>
+noremap <unique> <script> <Plug>llrsGoto <SID>goto_file<CR>
+
+noremap [{ [[k%%b:cs find c <C-R>=expand("<cword>")<CR><CR>
+noremap ]} 2j]]k%%b
+
+noremap ;a :call llrs#showAddScrath()<CR>
+noremap ;f :call llrs#filterInScratch("")<Left><Left>
+noremap ;b :call llrs#qqliveInfo()<CR>
+noremap ;r :call llrs#removeRepeate(31)<Left><Left>
+noremap ;1 :call llrs#showdata("misc","","","","")<Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left>
+
+nmap <Leader>1 :cs find s <C-R>=expand("<cword>")<CR><CR>
+nmap <C-\>s :cs find s <C-R>=expand("<cword>")<CR><CR>
+nmap <C-\>g :cs find g <C-R>=expand("<cword>")<CR><CR>
+nmap <C-\>c :cs find c <C-R>=expand("<cword>")<CR><CR>
+nmap <C-\>t :cs find t <C-R>=expand("<cword>")<CR><CR>
+nmap <C-\>e :cs find e <C-R>=expand("<cword>")<CR><CR>
+nmap <C-\>f :cs find f <C-R>=expand("<cfile>")<CR><CR>
+nmap <C-\>i :cs find i ^<C-R>=expand("<cfile>")<CR>$<CR>
+nmap <C-\>d :cs find d <C-R>=expand("<cword>")<CR><CR>
+nmap <C-\>a :cs find a <C-R>=expand("<cword>")<CR><CR>
+
+nnoremap <Leader>n   <Esc>:NERDTreeToggle<CR>
+nnoremap <Leader>m   <Esc>:NERDTreeFind<CR>
+nnoremap <Leader>d   <Esc>:YcmCompleter GoToDefinition<CR>
+nnoremap <Leader>t   <Esc>:YcmCompleter GoToDeclaration<CR>
+nnoremap <Leader>g   <Esc>:YcmCompleter GoToInclude<CR>
+nnoremap <Leader>yf   <Esc>:YcmCompleter FixIt<CR>
+
+nnoremap <Leader>z :TagbarToggle<CR><C-w>l
+noremap <Leader>r <Esc>:w<CR>:!rm hello<CR>:make<CR>:!./hello<CR>
+noremap <Leader>b <Esc>:w<CR>:!rm hello<CR>:silent make\|redraw!\|cc<CR>
+nnoremap <Leader>e   <Esc>:PlantumlOpen<CR>
+
+" markdown配色
+vmap 'r di<font color="#F4606C">**<Esc>pa**</font><Esc>
+vmap 'g di<font color="#19CAAD">**<Esc>pa**</font><Esc>
+vmap 'b di<font color="#BEEDC7">**<Esc>pa**</font><Esc>
+vmap 'y di<font color="#D1BA74">**<Esc>pa**</font><Esc>
+
+" ctrlp
+map <leader>f :CtrlPMRU<CR>
+map <leader>fb :CtrlPBuffer<CR>
+
+" section map end----------------------------------------------------------------------------------------------------
 function! s:get_input()
 py3 << EOF
 import vim
@@ -74,28 +148,6 @@ endfunction
 let s:sinput='ABC'
 command! -nargs=0 LlrsHead  call s:to_head_or_impl()
 
-noremap <SID>to_head_or_impl :call <SID>to_head_or_impl()<CR>
-noremap <unique> <script> <Plug>llrsHead <SID>to_head_or_impl
-
-noremap <SID>compare_file :call <SID>compare_file()<CR>
-noremap <unique> <script> <Plug>llrsCompare <SID>compare_file
-noremap <SID>goto_file :call <SID>goto_file()<CR>
-noremap <unique> <script> <Plug>llrsGoto <SID>goto_file<CR>
-
-noremap [{ [[k%%b:cs find c <C-R>=expand("<cword>")<CR><CR>
-noremap ]} 2j]]k%%b
-
-map <C-l>3   <Plug>llrsCompare<Esc>gt<Plug>llrsGoto
-map <C-l>2   <Plug>llrsHead
-nnoremap <C-l>a   <Esc>:w<CR>:!git add %<CR>
-nnoremap <C-l>c   <Esc>:w<CR>:!git commit -m ""<Left>
-nnoremap <C-l>g   <Esc>:!git push origin master<CR>
-nnoremap <C-l>1   <Esc>:1b<CR>
-"nnoremap <C-l>d   <Esc>:packadd termdebug<CR>:Termdebug<CR><C-W>c<C-w>c<C-w>s:b arm-linux-androideabi-gdb<CR>set sysroot /Users/luoluorushi/tmp/and/8d946090/system/bin<CR>file ~/app_process<CR>target remote :4000<CR>set solib-search-path /Users/luoluorushi/code/tvkplayer/tvkplayercore/core/obj-full<CR>
-"nnoremap <C-l>d   <Esc>:packadd termdebug<CR>:Termdebug<CR><C-W>c<C-w>c<C-w>s<C-w>v:b debugged program<CR><C-w>h:b arm-linux-androideabi-gdb<CR>set sysroot /Users/luoluorushi/tmp/and/8d946090/system/bin<CR>file ~/app_process<CR>target remote :4000<CR>set solib-search-path /Users/luoluorushi/code/tvkplayer/tvkplayercore/core/obj-full<CR>
-nnoremap <C-l>d   <Esc>:packadd termdebug<CR>:Termdebug hello<CR><C-W>c<C-w>c<C-w>s<C-w>v:b debugged program<CR><C-w>h:b gdb<CR>
-
-
 "autocmd InsertLeave * silent! let s:sinput=s:get_input() | silent! call s:change_input_source(0)
 "autocmd InsertEnter * silent! call s:change_input_source(1)
 "autocmd VimEnter * call s:zoom_window()
@@ -107,12 +159,6 @@ set vb t_vb=
 set mouse=
 
 "register
-let @a='viw"jp'
-let @t='i// "%poo ckbCreated by luoluorushi on =strftime("%Y/%m/%d.")Copyright u00a9 =stfkbrftime("%Y¿ "kbkb ")luoluorushi. All rights reserved.kbkbkb8bx2j'
-let @g='i#include "gtest/gtest.h"namespace{kbusing namespace std;TEST(){EXPECT_EQ();kkhi'
-"let @k=':let @I*kbkb*=expand("%"):vi Cmakelists.tekbxtgg6jk$bbgg/add_ex3wv$hhp:w'
-let @k=':let @*=@%:vi makefilegg2wv3wbep:w'
-let @f='/#define FILE_A_INI//ggyG:w'
 
 " vim tips
 " capture a control character by first typing CTRL-v followed by the character you want
@@ -856,13 +902,6 @@ fu! llrs#addFromScratch()
     call s:addDbData(filedb, title, des, url, copy, piclist,filelist, colume, tag,reference)
 endfu
 
-" ===============================map begin ========================================
-noremap ;a :call llrs#showAddScrath()<CR>
-noremap ;f :call llrs#filterInScratch("")<Left><Left>
-noremap ;b :call llrs#qqliveInfo()<CR>
-noremap ;r :call llrs#removeRepeate(31)<Left><Left>
-noremap ;1 :call llrs#showdata("misc","","","","")<Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left>
-" ===============================map end ========================================
 "
 " ===============================database end ========================================
 
