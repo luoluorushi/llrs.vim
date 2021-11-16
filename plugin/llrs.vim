@@ -108,11 +108,11 @@ set mouse=
 
 "register
 let @a='viw"jp'
-let @t='i// "%poo c�kbCreated by luoluorushi on =strftime("%Y/%m/%d.")Copyright u00a9 =stf�kbrftime("%Y� "�kb�kb ")luoluorushi. All rights reserved.�kb�kb�kb8bx2j'
-let @g='i#include "gtest/gtest.h"namespace{�kbusing namespace std;TEST(){EXPECT_EQ();kkhi'
-"let @k=':let @I*�kb�kb*=expand("%"):vi Cmakelists.te�kbxtgg6jk$bbgg/add_ex3wv$hhp:w'
+let @t='i// "%poo ckbCreated by luoluorushi on =strftime("%Y/%m/%d.")Copyright u00a9 =stfkbrftime("%Y¿ "kbkb ")luoluorushi. All rights reserved.kbkbkb8bx2j'
+let @g='i#include "gtest/gtest.h"namespace{kbusing namespace std;TEST(){EXPECT_EQ();kkhi'
+"let @k=':let @I*kbkb*=expand("%"):vi Cmakelists.tekbxtgg6jk$bbgg/add_ex3wv$hhp:w'
 let @k=':let @*=@%:vi makefilegg2wv3wbep:w'
-let @f='/#define FILE_A_INI//��aggvG$y'
+let @f='/#define FILE_A_INI//ggyG:w'
 
 " vim tips
 " capture a control character by first typing CTRL-v followed by the character you want
@@ -126,6 +126,73 @@ fu! llrs#scratch()
 	exec "setlocal noswapfile"
 	exec "setlocal nobuflisted"
     noremap <buffer> ;q :bd<CR>
+endfu
+
+fu! llrs#putString(str)
+    let @8 = a:str
+    put 8
+endfu
+
+fu! llrs#qqliveInfo()
+    let lines = getline(1, '$')
+    let listlen = len(lines)
+    let index = 0
+    if listlen == 0
+        return
+    endif
+    call llrs#scratch()
+
+    "basic info
+    call llrs#putString('基础信息:')
+    let versionFlag = 1
+    let cookieFlag = 1
+    while index < listlen
+        let filter = "QQLiveApplication"
+        if versionFlag == 1 && match(lines[index], filter) != -1 && match(lines[index], "versionName =") != -1
+            let pat = 'versionName = \(.*\)'
+            let matchList = matchlist(lines[index], pat)
+            call llrs#putString('  版本：'..matchList[1])
+            let versionFlag = 0
+        endif
+        let filter = 'synSysWebCookies cookie'
+        if cookieFlag == 1 && match(lines[index], filter) != -1
+            let cookieFlag = 0
+            let pat = 'video_omgid=\(.\{-}\);'
+            let matchList = matchlist(lines[index], pat)
+            call llrs#putString('  omgid：'..matchList[1])
+            let pat = 'guid=\(.\{-}\);'
+            let matchList = matchlist(lines[index], pat)
+            call llrs#putString('  guid：'..matchList[1])
+            let pat = 'vuserid=\(.\{-}\);'
+            let matchList = matchlist(lines[index], pat)
+            call llrs#putString('  vuid：'..matchList[1])
+            let pat = 'main_login=\(.\{-}\);'
+            let matchList = matchlist(lines[index], pat)
+            call llrs#putString('  main_login：'..matchList[1])
+            let pat = 'isDarkMode=\(.\{-}\);'
+            let matchList = matchlist(lines[index], pat)
+            call llrs#putString('  dark_mode：'..matchList[1])
+        endif
+        if versionFlag == 0 && cookieFlag == 0
+            break
+        endif
+        let index += 1
+    endwhile
+
+    "live info
+    let index = 0
+    while index < listlen
+        let index += 1
+    endwhile
+
+    "vn info
+    let index = 0
+    while index < listlen
+        let index += 1
+    endwhile
+    "tvk info
+    "登录信息
+    "联通免流信息
 endfu
 
 fu! llrs#removeRepeate(start)
@@ -792,6 +859,7 @@ endfu
 " ===============================map begin ========================================
 noremap ;a :call llrs#showAddScrath()<CR>
 noremap ;f :call llrs#filterInScratch("")<Left><Left>
+noremap ;b :call llrs#qqliveInfo()<CR>
 noremap ;r :call llrs#removeRepeate(31)<Left><Left>
 noremap ;1 :call llrs#showdata("misc","","","","")<Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left>
 " ===============================map end ========================================
