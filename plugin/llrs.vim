@@ -72,6 +72,21 @@ map <leader>f :CtrlPMRU<CR>
 map <leader>fb :CtrlPBuffer<CR>
 
 " section map end----------------------------------------------------------------------------------------------------
+
+" section inner command begin----------------------------------------------------------------------------------------------
+
+set shell=/bin/zsh
+set vb t_vb=
+set mouse=
+
+"autocmd InsertLeave * silent! let s:sinput=s:get_input() | silent! call s:change_input_source(0)
+"autocmd InsertEnter * silent! call s:change_input_source(1)
+"autocmd VimEnter * call s:zoom_window()
+"autocmd VimLeave * call s:zoom_window()
+"autocmd GUIEnter * call s:load_proj()
+
+" section inner comand end--------------------------------------------------------------------------------------------------
+
 function! s:get_input()
 py3 << EOF
 import vim
@@ -147,16 +162,6 @@ endfunction
 
 let s:sinput='ABC'
 command! -nargs=0 LlrsHead  call s:to_head_or_impl()
-
-"autocmd InsertLeave * silent! let s:sinput=s:get_input() | silent! call s:change_input_source(0)
-"autocmd InsertEnter * silent! call s:change_input_source(1)
-"autocmd VimEnter * call s:zoom_window()
-"autocmd VimLeave * call s:zoom_window()
-"autocmd GUIEnter * call s:load_proj()
-
-set shell=/bin/zsh
-set vb t_vb=
-set mouse=
 
 "register
 
@@ -302,6 +307,7 @@ fu! llrs#filterInScratch(filter)
 endfu
 
 " ===============================utils end ======================================
+
 " ===============================database begin ======================================
 
 " title:title content
