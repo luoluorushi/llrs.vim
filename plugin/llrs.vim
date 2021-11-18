@@ -79,7 +79,9 @@ set shell=/bin/zsh
 set vb t_vb=
 set mouse=
 
-"autocmd InsertLeave * silent! let s:sinput=s:get_input() | silent! call s:change_input_source(0)
+autocmd InsertLeave * silent! call s:change_input_source(0)
+autocmd VimEnter * silent! call s:change_input_source(0)
+"autocmd VimEnter * silent! let s:sinput=s:get_input() | silent! call s:change_input_source(0)
 "autocmd InsertEnter * silent! call s:change_input_source(1)
 "autocmd VimEnter * call s:zoom_window()
 "autocmd VimLeave * call s:zoom_window()
