@@ -11,6 +11,7 @@ let @f='/#define FILE_A_INI//ggyG:w'
 
 " section map begin--------------------------------------------------------------------------------------------------
 
+nnoremap <C-j>   <Esc>0yiwj
 map <C-l>3   <Plug>llrsCompare<Esc>gt<Plug>llrsGoto
 map <C-l>2   <Plug>llrsHead
 nnoremap <C-l>a   <Esc>:w<CR>:!git add %<CR>
@@ -34,6 +35,7 @@ noremap ]} 2j]]k%%b
 
 noremap ;a :call llrs#showAddScrath()<CR>
 noremap ;f :call llrs#filterInScratch("")<Left><Left>
+noremap ;; :call llrs#submarineLaunch()<CR>
 noremap ;b :call llrs#qqliveInfo()<CR>
 noremap ;r :call llrs#removeRepeate(31)<Left><Left>
 noremap ;1 :call llrs#showdata("misc","","","","")<Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left>
@@ -184,6 +186,39 @@ endfu
 fu! llrs#putString(str)
     let @8 = a:str
     put 8
+endfu
+
+fu! llrs#submarineLaunch()
+	let lines = getline(1, '$')
+    let listlen = len(lines)
+    if listlen == 0
+        return
+    endif
+    call llrs#scratch()
+    let index = 0
+    let filters = ['main]','pagemodel','AppBrightnessController','activity','pagelogic','end of mmap','begin of mmap']
+    let nofilters = ['RAFTTabSDKNotifyExecutor','VBPBService-','tquic_main_thre']
+    while index < listlen
+        let isIgnore = 0
+        for nofilter in nofilters
+            if match(lines[index], nofilter) != -1
+                let isIgnore = 1
+                break
+            endif
+        endfor
+        if isIgnore == 1
+            let index += 1
+            continue
+        endif
+        for filter in filters
+            if match(lines[index], filter) != -1
+                let @8 = lines[index]
+                put 8
+                break
+            endif
+        endfor
+        let index += 1
+    endwhile
 endfu
 
 fu! llrs#qqliveInfo()
