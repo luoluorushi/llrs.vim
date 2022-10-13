@@ -35,10 +35,14 @@ noremap ]} 2j]]k%%b
 
 noremap ;a :call llrs#showAddScrath()<CR>
 noremap ;f :call llrs#filterInScratch("")<Left><Left>
-noremap ;; :call llrs#submarineLaunch()<CR>
+noremap ;;; :call llrs#submarineLaunch()<CR>
 noremap ;b :call llrs#qqliveInfo()<CR>
 noremap ;r :call llrs#removeRepeate(31)<Left><Left>
 noremap ;1 :call llrs#showdata("misc","","","","")<Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left>
+noremap ;;m :call llrs#markLog()<CR>
+noremap ;;c :call llrs#clearMarkLog()<CR>
+noremap ;;a :call llrs#markScratch()<CR>
+noremap ;;s :call llrs#showMarkedLog()<CR>
 
 nmap <Leader>1 :cs find s <C-R>=expand("<cword>")<CR><CR>
 nmap <C-\>s :cs find s <C-R>=expand("<cword>")<CR><CR>
@@ -186,6 +190,34 @@ endfu
 fu! llrs#putString(str)
     let @8 = a:str
     put 8
+endfu
+
+let w:loglines = []
+
+fu! llrs#markLog()
+    let line = getline(".")
+    call add(w:loglines, line)
+endfu
+
+fu! llrs#markScratch()
+	let lines = getline(1, '$')
+    for line in lines
+        call add(w:loglines, line)
+    endfor
+endfu
+
+fu! llrs#clearMarkLog()
+    let w:loglines = []
+endfu
+
+fu! llrs#showMarkedLog()
+    call llrs#scratch()
+    for markline in w:loglines
+        let @8 = markline
+        put 8
+    endfor
+    let sortCommand = "%sort u"
+    exec sortCommand
 endfu
 
 fu! llrs#submarineLaunch()
